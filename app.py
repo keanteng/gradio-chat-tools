@@ -2,6 +2,7 @@ import gradio as gr
 from utils.sentiment_analyzer import analyze_sentiment
 from utils.authenticate import authenticate_gemini
 from utils.user_intent import intent_detection
+from gradio import ChatMessage
 import time
 import json
 import re
@@ -29,13 +30,28 @@ def process_chat(message, history):
         
         # Check if the request is for sentiment analysis
         if response_data.get("intent") == "yes":
+
+            # Update history before returning - only keep the final result
             sentiment = analyze_sentiment(message)
+
             
             # Generate response about sentiment
             if sentiment == "positive":
-                return "The sentiment is positive."
+                return """
+                <details>
+                <summary>Technical Details</summary>
+                Analysis performed using BERT model.
+                </details>
+                The sentiment is positive.
+                """
             else:
-                return "The sentiment is negative."
+                return """
+                <details>
+                <summary>Technical Details</summary>
+                Analysis performed using BERT model.
+                </details>
+                The sentiment is negative.
+                """
         
         # For non-sentiment queries, return the response field
         return response_data['response']
